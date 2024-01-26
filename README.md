@@ -1,2 +1,2 @@
-# APIwithEnvironmentVariables
-API Automation Testing with Environment Variable in Postman Collection
+# APIwithEnvironment Variables
+API Automation Testing with Environment Variable in Postman Collection 
