@@ -9,6 +9,104 @@
 	"item": [
 		{
 			"name": "List Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var template = `\r",
+							"<style type=\"text/css\">\r",
+							"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+							"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+							"    .tftable tr {background-color:#ffffff;}\r",
+							"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+							"    .tftable tr:hover {background-color:#e0ffff;}\r",
+							"</style>\r",
+							"\r",
+							"<table class=\"tftable\" border=\"1\">\r",
+							"    <tr>\r",
+							"        <th>ID</th>\r",
+							"        <th>Email</th>\r",
+							"        <th>First Name</th>\r",
+							"        <th>Last Name</th>\r",
+							"        <th>Avatar</th>\r",
+							"    </tr>\r",
+							"    \r",
+							"    {{#each response.data}}\r",
+							"        <tr>\r",
+							"            <td>{{id}}</td>\r",
+							"            <td>{{email}}</td>\r",
+							"            <td>{{first_name}}</td>\r",
+							"            <td>{{last_name}}</td>\r",
+							"            <td>{{avatar}}</td>\r",
+							"        </tr>\r",
+							"    {{/each}}\r",
+							"</table>\r",
+							"`;\r",
+							"\r",
+							"function constructVisualizerPayload() {\r",
+							"    return {response: pm.response.json()}\r",
+							"}\r",
+							"\r",
+							"pm.visualizer.set(template, constructVisualizerPayload());\r",
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Content-Type header is application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify the presence and fields of support object\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.support).to.exist;\r",
+							"    pm.expect(responseData.support.url).to.exist;\r",
+							"    pm.expect(responseData.support.text).to.exist;\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Data array is present and contains expected number of elements\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.data).to.exist.and.to.be.an('array');\r",
+							"    pm.expect(responseData.data).to.have.lengthOf.at.least(1, \"Data array should contain at least one element\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"ID is a non-negative integer\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    responseData.data.forEach(function(user) {\r",
+							"        pm.expect(user.id).to.be.a('number').and.to.be.at.least(0);\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Avatar is a valid URL format\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData.data).to.be.an('array');\r",
+							"  responseData.data.forEach(function(user) {\r",
+							"    pm.expect(user.avatar).to.match(/^http(s)?:\\/\\/.+/);\r",
+							"  });\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response body is not empty\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.not.be.empty;\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -27,12 +125,49 @@
 							"value": "2"
 						}
 					]
-				}
+				},
+				"description": "This API endpoint makes an HTTP GET request to retrieve a list of users from the server. The request is sent to the URL `{{url}}/api/users` with a query parameter `page` set to `2`.\n\nThe response from the server will have a status code of 200, indicating a successful request. The response body will contain information about the users, including the current page number, the number of users per page, the total number of users, the total number of pages, and an array of user objects.\n\nEach user object in the response array will have the following properties:\n\n- `id`: The unique identifier of the user.\n- `email`: The email address of the user.\n- `first_name`: The first name of the user.\n- `last_name`: The last name of the user.\n- `avatar`: The URL of the user's avatar image.\n    \n\nThe response also includes a `support` object with the following properties:\n\n- `url`: The URL for any additional support or documentation related to the API.\n- `text`: A text message providing additional information or instructions.\n    \n\nPlease refer to the API documentation or the support URL for more details on how to use this endpoint or interact with the returned user data."
 			},
 			"response": []
 		},
 		{
 			"name": "Create User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Schema is valid\", function () {\r",
+							"  var schema = {\r",
+							"    type: \"object\",\r",
+							"    properties: {\r",
+							"      name: { type: \"string\" },\r",
+							"      job: { type: \"string\" },\r",
+							"      id: { type: \"string\" },\r",
+							"      createdAt: { type: \"string\" },\r",
+							"    },\r",
+							"    required: [\"name\", \"job\", \"id\", \"createdAt\"],\r",
+							"  };\r",
+							"\r",
+							"  var response = pm.response.json();\r",
+							"  pm.expect(tv4.validate(response, schema)).to.be.true;\r",
+							"});\r",
+							"\r",
+							"// Test for response content type\r",
+							"pm.test(\"Response has content type application/json\", function () {\r",
+							"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Test for response time\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -54,12 +189,53 @@
 						"api",
 						"users"
 					]
-				}
+				},
+				"description": "\nThis API endpoint allows you to create a new user by sending an HTTP POST request to the specified URL. The request should include the necessary parameters in the request body.\n\n### Request\n\nThe request should be sent to `{{url}}/api/users` with the following parameters:\n\n- `name` (string): The name of the user.\n- `job` (string): The job title of the user.\n\n### Response\n\nUpon successful creation of the user, the API will respond with a status code of 201 (Created) and the following response body:\n\n```json\n{\n    \"name\": \"\",\n    \"job\": \"\",\n    \"id\": \"\",\n    \"createdAt\": \"\"\n}\n```\n\n- `name` (string): The name of the created user.\n- `job` (string): The job title of the created user.\n- `id` (string): The unique identifier of the created user.\n- `createdAt` (string): The timestamp when the user was created.\n\nPlease note that the values for `name`, `job`, `id`, and `createdAt` will be populated with the actual data returned by the API.\n\n"
 			},
 			"response": []
 		},
 		{
 			"name": "Update User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Response has the required fields - name, job, and updatedAt\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"    \r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData).to.have.property('name');\r",
+							"    pm.expect(responseData).to.have.property('job');\r",
+							"    pm.expect(responseData).to.have.property('updatedAt');\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Name and job must be non-empty strings\", function () {\r",
+							"  const responseData = pm.response.json();\r",
+							"  \r",
+							"  pm.expect(responseData).to.be.an('object');\r",
+							"  pm.expect(responseData.name).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Name should not be empty\");\r",
+							"  pm.expect(responseData.job).to.be.a('string').and.to.have.lengthOf.at.least(1, \"Job should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Job is in a valid format\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"\r",
+							"    pm.expect(responseData).to.be.an('object');\r",
+							"    pm.expect(responseData.job).to.be.a('string');\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -82,12 +258,37 @@
 						"users",
 						"2"
 					]
-				}
+				},
+				"description": "\nThis HTTP PUT request is used to update the information of a user with the specified ID. The ID of the user to be updated is provided in the URL as a path parameter.\n\nThe last execution of this request returned a response with a status code of 200, indicating a successful update. The response body included the updated values for the user's name, job, and updatedAt fields.\n\nTo update the user's information, send a PUT request to the specified URL with the necessary request parameters. The request body should contain the updated values for the user's name and job.\n\nPlease note that the response body provided in the example is empty. However, when making the actual request, the response body may include additional fields or information depending on the API implementation.\n\n### Request URL\n`PUT {{url}}/api/users/2`\n\n### Request Parameters\n- Path Parameters:\n  - `2` - The ID of the user to be updated.\n\n### Request Body\nThe request body should be a JSON object containing the updated values for the user's name and job fields. For example:\n```json\n{\n  \"name\": \"John Doe\",\n  \"job\": \"Software Engineer\"\n}\n```\n\n### Response\nThe response will include a status code indicating the success or failure of the update operation. In the example provided, the status code was 200, indicating a successful update.\n\nThe response body may include the updated values for the user's name, job, and updatedAt fields. However, the example response body provided in the question is empty. The actual response body may vary depending on the API implementation.\n\nIt is recommended to check the response status code and any relevant error messages in the response body to ensure the update was successful.\n\n"
 			},
 			"response": []
 		},
 		{
 			"name": "Patch Update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Verify the length of data properties\r",
+							"pm.test(\"The length of name, job, and updatedAt properties must be greater than zero\", function () {\r",
+							"    const responseData = pm.response.json();\r",
+							"   \r",
+							"    pm.expect(responseData.name.length).to.be.greaterThan(0, \"Name should not be empty\");\r",
+							"    pm.expect(responseData.job.length).to.be.greaterThan(0, \"Job should not be empty\");\r",
+							"    pm.expect(responseData.updatedAt.length).to.be.greaterThan(0, \"UpdatedAt should not be empty\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Verify the response time is within an acceptable range\r",
+							"pm.test(\"Response time is less than 1000ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PATCH",
 				"header": [],
@@ -110,12 +311,30 @@
 						"users",
 						"2"
 					]
-				}
+				},
+				"description": "\nThis HTTP PATCH request is used to update user information for a specific user with the ID 2. The request should include a raw JSON payload with the keys \"name\" and \"job\" to update the user's name and job information.\n\n### Request Body\n- name (string, optional): The updated name of the user.\n- job (string, optional): The updated job information of the user.\n\n### Response\nUpon successful execution, the response will have a status code of 200 and a JSON content type. The response body will include the updated \"name\" and \"job\" fields, along with the \"updatedAt\" field indicating the timestamp of the update.\n\nExample:\n```json\n{\n    \"name\": \"updated name\",\n    \"job\": \"updated job\",\n    \"updatedAt\": \"timestamp\"\n}\n```\n"
 			},
 			"response": []
 		},
 		{
 			"name": "Delete User",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"\r",
+							"// Verify the length of the response data\r",
+							"pm.test(\"Response data length must be empty\", function () {\r",
+							"    const responseData = xml2Json(pm.response.text());\r",
+							"    pm.expect(responseData).to.be.null;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -130,6 +349,92 @@
 						"2"
 					]
 				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://www.dataaccess.com/webservicesserver/NumberConversion.wso",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Response Content-Type is 'text/xml'\", function () {",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"text/xml\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Validate the structure of the soap:Envelope\", function () {",
+							"  const responseData = xml2Json(pm.response.text());",
+							"  ",
+							"  pm.expect(responseData).to.have.property('soap:Envelope');",
+							"  pm.expect(responseData['soap:Envelope']).to.be.an('object');",
+							"});",
+							"",
+							"",
+							"pm.test(\"M:NumberToWordsResponse contains the expected namespace\", function () {",
+							"    const responseData = xml2Json(pm.response.text());",
+							"    ",
+							"    pm.expect(responseData['soap:Envelope']['soap:Body']['m:NumberToWordsResponse'].$['xmlns:m']).to.exist;",
+							"});",
+							"",
+							"",
+							"pm.test(\"Ensure that the m:NumberToWordsResult is not empty\", function () {",
+							"    const responseData = xml2Json(pm.response.text());",
+							"",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData['soap:Envelope']['soap:Body']['m:NumberToWordsResponse']['m:NumberToWordsResult']).to.exist.and.to.not.be.empty;",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml",
+						"type": "text"
+					},
+					{
+						"key": "SOAPAction",
+						"value": "\"#POST\"",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <soap:Body>\r\n   <NumberToWords xmlns=\"http://www.dataaccess.com/webservicesserver/\">\r\n     <ubiNum>500</ubiNum>\r\n   </NumberToWords>\r\n  </soap:Body>\r\n</soap:Envelope>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://www.dataaccess.com/webservicesserver/NumberConversion.wso",
+					"protocol": "https",
+					"host": [
+						"www",
+						"dataaccess",
+						"com"
+					],
+					"path": [
+						"webservicesserver",
+						"NumberConversion.wso"
+					]
+				},
+				"description": "\nThis HTTP POST request is used to convert a number into words using the NumberConversion web service provided by dataaccess.com. The request body is in XML format and contains the number to be converted. Upon successful execution, the response is in XML format with the converted number in words.\n\nThe request body should be structured as follows:\n```xml\n<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n   <NumberToWords xmlns=\"http://www.dataaccess.com/webservicesserver/\">\n     <ubiNum>500</ubiNum>\n   </NumberToWords>\n  </soap:Body>\n</soap:Envelope>\n```\n\nThe response will have a status code of 200 and the content type will be `text/xml`. The response body will contain the converted number in words within the `m:NumberToWordsResult` field.\n"
 			},
 			"response": []
 		}
