@@ -31,7 +31,7 @@ jobs:
       # Run the POSTMAN collection
       - name: Run POSTMAN collection
         run: |
-          newman run reqres.postman_collection.json -e Environmentreqres.postman_environment.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/runreport1.html
+          newman run reqres.postman_collection.json -e Environmentreqres.postman_environment.json -r htmlextra --reporter-htmlextra-export testResults/htmlreport.html --reporter-htmlextra-darkTheme  > testResults/index.html || true
          
     # Upload the contents of Test Results directory to workspace
       - name: Output the run Details
