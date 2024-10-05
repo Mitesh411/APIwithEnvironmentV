@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@v4.2.0
 
 
       # INstall Node on the runner
       - name: Install Node
-        uses: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.0.4
         with:
-          node-version: "18"
+          node-version: "20"
 
 
       # Install the newman command line utility and also install the html extra reporter
@@ -35,14 +35,14 @@ jobs:
          
     # Upload the contents of Test Results directory to workspace
       - name: Output the run Details
-        uses: actions/upload-artifact@v4.3.1
+        uses: actions/upload-artifact@v4.4.0
         if: always()
         with:
           name: RunReports
           path: testResults/
           
       - name: Publish to Github Pages
-        uses: peaceiris/actions-gh-pages@v3.9.3
+        uses: peaceiris/actions-gh-pages@v4.0.0
         if: always()
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
