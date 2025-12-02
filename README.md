@@ -1,38 +1,21 @@
-# API with Environment Variables
-API Automation Testing with Environment Variable in Postman Collection 
+# Postman API Automation Integration with GitHub Actions
 
+This repository serves as a proof of concept (POC) for integrating Postman-based API tests with GitHub Actions in a continuous integration workflow.
 
-🚀 API Automation Framework 🚀
+All test cases are authored in Postman and executed on a virtual machine using Newman in combination with the `newman-reporter-htmlextra` plugin. GitHub Actions is configured to trigger the test suite:
 
-I’m thrilled to share the successful development of a Java-based API Automation Framework, designed for scalability, maintainability, and seamless CI/CD integration.
+* Automatically on every push to the `main` branch
+* Manually via the `workflow_dispatch` event
+* On a scheduled basis using a cron job
 
-🔧 Technologies & Tools Used:
+Upon completion of each run, the generated HTML report is archived and made available in the **Artifacts** section for team download and review.
 
- 💻 Java: Reliable and robust core for the framework.
+## 🌐 GitHub Pages
 
- 📦 Maven: Simplified dependency management and build process.
+You can directly view the latest test report of the Postman Test here:  
 
- 🧪 TestNG: Advanced test management and parallel execution capabilities.
+👉 [https://mitesh411.github.io/APIwithEnvironmentV/](https://mitesh411.github.io/APIwithEnvironmentV/)
 
- 🌐 RestAssured: For testing RESTful APIs with ease.
+In addition, the latest report is distributed to team members via email using Gmail SMTP, ensuring timely visibility of test results and overall API quality status.
 
-✨ Framework Design Features:
-
- 🧩 Service Object Model Design Pattern: Enables modular and reusable code for API interactions.
-
- 🏗️ Builder Classes: Simplifies creating dynamic and complex request payloads.
-
- 🔍 Listeners & Filters: Custom logging, request/response validation, and enhanced reporting.
-
- 📝 Comprehensive Logging: Tracks API requests and responses for debugging and traceability.
-
-🔄 Integrated with GitHub Actions:
-
- 🤖 Automated Test Execution: Runs on every code push or pull request.
-
- 📊 Continuous Feedback: Provides real-time reporting for seamless CI/CD workflows.
-
- 📜 JUnit Reports: Maven Surefire Plugin ensures detailed test results in the pipeline.
-
-This framework empowers teams with efficient API testing and seamless CI/CD automation, ensuring high-quality delivery at speed.
-If you’re exploring ways to integrate API automation into your CI/CD pipelines, let’s connect and share ideas!
+---
