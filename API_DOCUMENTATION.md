@@ -9,13 +9,16 @@ The testing framework leverages Postman for test authoring and Newman for CLI ex
 
 ```mermaid
 graph TD
-    A[Developer Pushes Code / Scheduled Cron] -->|Triggers| B(GitHub Actions)
-    B --> C{Newman Execution}
-    C -->|Runs Collection| D[ReqRes API / DataAccess API]
-    C -->|Generates HTML Report| E[newman-reporter-htmlextra]
-    E --> F[HTML Report Artifact]
-    F -->|Published to| G[GitHub Pages]
-    F -->|Sent via| H[Gmail SMTP]
+    A["Developer Pushes Code / Scheduled Cron"] -->|Triggers| B["GitHub Actions"]
+    B --> C{"Newman Execution"}
+
+    C -->|Runs Collection| D["ReqRes API / DataAccess API"]
+    C -->|Generates HTML Report| E["newman-reporter-htmlextra"]
+
+    E --> F["HTML Report Artifact"]
+
+    F -->|Published to| G["GitHub Pages"]
+    F -->|Sent via| H["Gmail SMTP"]
 ```
 
 ## Environment Configuration
