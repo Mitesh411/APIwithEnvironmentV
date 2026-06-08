@@ -24,15 +24,22 @@ Files referenced:
 ![High-Level Architecture](diagrams/high-level-architecture.drawio.png)
 
 ## High-Level Architecture (Mermaid fallback)
-
 ```mermaid
-graph TD
-  Dev["Developer (push / schedule / manual)"] -->|triggers| GH["GitHub Actions (workflow)"]
-  GH --> Newman["Newman (executes Postman collection)"]
-  Newman --> Report["HTML Report (newman-reporter-htmlextra)"]
-  Report --> Artifact["Artifact: HTML report"]
-  Artifact --> Pages["GitHub Pages (published site)"]
-  Artifact --> Gmail["Gmail SMTP (email distribution)"]
+flowchart TD
+
+    A[Developer] -->|Push / Schedule / Manual Trigger| B[GitHub Actions]
+
+    B --> C[Newman]
+    C --> D[Postman Collection Execution]
+
+    D --> E[HTML Report]
+    E --> F[GitHub Actions Artifact]
+
+    F --> G[GitHub Pages]
+    F --> H[Gmail SMTP]
+
+    G --> I[Published Report Website]
+    H --> J[Email Distribution]
 ```
 
 # Processing Pipeline
